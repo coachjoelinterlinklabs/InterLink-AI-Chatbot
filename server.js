@@ -16,9 +16,10 @@ if (!GEMINI_API_KEY) {
   console.warn("⚠️ GEMINI_API_KEY not set. Please configure it in Railway.");
 }
 
-// Optional: Default system prompt
-const DEFAULT_SYSTEM_PROMPT = `Primary Function: You are Coach Joel AI who helps the InterLink Community...`;
+// Health check endpoint
+app.get("/", (req, res) => res.send("🚀 Coach Joel AI is running"));
 
+// Chat endpoint
 app.post("/chat", async (req, res) => {
   const { message, systemPrompt } = req.body;
   if (!message) return res.status(400).json({ error: "Missing message" });
@@ -35,17 +36,13 @@ app.post("/chat", async (req, res) => {
           {
             parts: [
               {
-                text: systemPrompt || DEFAULT_SYSTEM_PROMPT,
-              },
-            ],
+                text: systemPrompt || "Primary Function: You are Coach Joel AI who helps the InterLink Community..."
+              }
+            ]
           },
           {
-            parts: [
-              {
-                text: message,
-              },
-            ],
-          },
+            parts: [{ text: message }]
+          }
         ],
         generationConfig: {
           temperature: 0.2,
@@ -57,9 +54,7 @@ app.post("/chat", async (req, res) => {
     if (!response.ok) {
       const txt = await response.text().catch(() => "");
       console.error("Non-OK response from Gemini:", response.status, txt);
-      return res
-        .status(500)
-        .json({ error: `Model error: ${response.status}` });
+      return res.status(500).json({ error: `Model error: ${response.status}` });
     }
 
     const data = await response.json();
