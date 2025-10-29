@@ -51,12 +51,13 @@ async function askCoach(prompt) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Unknown error");
     return data.text;
   } catch (err) {
     console.error("askCoach error:", err);
-    return "⚠️ Error connecting to server.";
+    return "❌ Server not reachable. Please try again later.";
   }
 }
 
@@ -84,11 +85,15 @@ async function sendMessage() {
 
   const reply = await askCoach(personalizedPrompt);
 
-  // Replace "…" with real reply
+  // Replace "…" with real reply safely
   const dots = Array.from(document.querySelectorAll(".chat-area p")).find(
     (p) => p.textContent === "…"
   );
-  if (dots) dots.textContent = reply || "No response";
+  if (dots) {
+    dots.textContent = reply || "No response";
+  } else {
+    addMessage(reply || "No response", "bot");
+  }
 }
 
 // Send on button click
@@ -102,6 +107,8 @@ input?.addEventListener("keydown", (e) => {
 // Greet user when chat loads
 window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
-  addMessage("You can tell me your Telegram username or ID to personalize chat.", "bot");
+  addMessage(
+    "You can tell me your Telegram username or ID to personalize chat.",
+    "bot"
+  );
 });
-
