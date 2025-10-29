@@ -1,73 +1,67 @@
 // server.js
-import express from "express";
-import cors from "cors";
-import fetch from "node-fetch";
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "500kb" }));
 
-const PORT = process.env.PORT || 5000;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+// serve static frontend files
+app.use(express.static(path.join(__dirname, "public")));
 
-if (!GEMINI_API_KEY) {
-  console.warn("⚠️ GEMINI_API_KEY not set. Please configure it in Railway.");
-}
+const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
+if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set");
 
-// Health check endpoint
-app.get("/", (req, res) => res.send("🚀 Coach Joel AI is running"));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
-// Chat endpoint
-app.post("/chat", async (req, res) => {
-  const { message, systemPrompt } = req.body;
-  if (!message) return res.status(400).json({ error: "Missing message" });
-
+app.post("/api/generate", async (req, res) => {
   try {
-    const response = await fetch(GEMINI_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: systemPrompt || "Primary Function: You are Coach Joel AI who helps the InterLink Community..."
-              }
-            ]
-          },
-          {
-            parts: [{ text: message }]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 512,
+    // ✅ FIX: use dynamic import instead of require()
+    const fetch = (await import("node-fetch")).default;
+
+    const { prompt, systemPrompt } = req.body || {};
+    if (!prompt)
+      return res
+        .status(400)
+        .json({ success: false, error: "Missing prompt" });
+
+    const contents = [];
+    if (systemPrompt)
+      contents.push({ role: "system", parts: [{ text: systemPrompt }] });
+    contents.push({ role: "user", parts: [{ text: prompt }] });
+
+    const resp = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_KEY,
         },
-      }),
-    });
+        body: JSON.stringify({
+          contents,
+          generationConfig: { temperature: 0.2, maxOutputTokens: 512 },
+        }),
+      }
+    );
 
-    if (!response.ok) {
-      const txt = await response.text().catch(() => "");
-      console.error("Non-OK response from Gemini:", response.status, txt);
-      return res.status(500).json({ error: `Model error: ${response.status}` });
-    }
-
-    const data = await response.json();
-    const reply =
+    const data = await resp.json();
+    const text =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       data?.output?.[0]?.contents?.[0]?.parts?.[0]?.text ||
       "No response";
 
-    res.json({ reply });
+    res.json({ success: true, text });
   } catch (err) {
     console.error("❌ Error generating:", err);
-    res.status(500).json({ error: "Something went wrong." });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
