@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+dotenv.config(); // Load variables from .env
 
 dotenv.config();
 
@@ -47,3 +48,4 @@ app.post("/chat", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
