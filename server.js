@@ -10,13 +10,14 @@ import cors from "cors"; // if using ES module syntax
 const app = express();
 
 // ✅ FIXED: add explicit CORS headers
-app.use(
-  cors({
-    origin: "*", // allow all origins for testing (you can restrict later)
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Allow CORS for any frontend origin (e.g. file:// or GitHub Pages)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
+
 
 app.use(express.json({ limit: "500kb" }));
 
@@ -79,4 +80,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running on http://localhost:${PORT}`)
 );
+
 
