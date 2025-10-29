@@ -1,3 +1,4 @@
+"type": "module",
 {
   "name": "interlink-coach-proxy",
   "version": "1.0.0",
@@ -16,5 +17,6 @@
     "node": ">=18"
   }
 }
+
 
 
