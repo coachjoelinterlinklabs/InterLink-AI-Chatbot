@@ -69,7 +69,7 @@
                 src="https://public.interlinklabs.ai/1761665406060_Logo.png"
                 alt="" />
             </div>
-            <h1 class="font-semibold text-[18px]">Hello, zane152</h1>
+            <h1 class="font-semibold text-[18px]" id="userGreeting">Hello, User</h1>
           </div>
           <button class="header-button">
             <img
@@ -402,7 +402,11 @@ micBtn?.addEventListener("click", async () => {
   recognition.onerror = () => (micBtn.style.opacity = "1");
 });
 </script>
-
-	<script src="main.js"></script>
+	<script>
+  const id = localStorage.getItem("interlinkID") || "User";
+  document.getElementById("userGreeting").textContent = `Hello, ${id}`;
+</script>
+<script src="main.js"></script>
   </body>
 </html>
+
