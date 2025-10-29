@@ -1,34 +1,35 @@
 // server.js
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load .env variables
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ✅ Allow CORS
+// ✅ Middleware
 app.use(cors());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
-
 app.use(express.json({ limit: "500kb" }));
 
-// Serve static frontend files
+// Allow static frontend files
 app.use(express.static(path.join(__dirname, "public")));
 
-const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set");
 
+// Serve index.html on root
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// API endpoint for Gemini AI
 app.post("/api/generate", async (req, res) => {
   try {
-    // Use dynamic import for ESM-only modules
     const fetch = (await import("node-fetch")).default;
 
     const { prompt, systemPrompt } = req.body || {};
@@ -42,7 +43,7 @@ app.post("/api/generate", async (req, res) => {
       contents.push({ role: "system", parts: [{ text: systemPrompt }] });
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
-    const resp = await fetch(
+    const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
@@ -57,7 +58,7 @@ app.post("/api/generate", async (req, res) => {
       }
     );
 
-    const data = await resp.json();
+    const data = await response.json();
     const text =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       data?.output?.[0]?.contents?.[0]?.parts?.[0]?.text ||
@@ -70,7 +71,8 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
+// Start server on Railway port or 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
+  console.log(`🚀 Server running on port ${PORT}`)
 );
