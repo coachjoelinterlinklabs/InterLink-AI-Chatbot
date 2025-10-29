@@ -14,8 +14,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ✅ Middleware
-app.use(cors());
 app.use(express.json({ limit: "500kb" }));
+
+// Allow all origins, including null (file://) for local testing
+app.use(
+  cors({
+    origin: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -33,7 +41,9 @@ app.post("/api/generate", async (req, res) => {
   try {
     const { prompt, systemPrompt } = req.body || {};
     if (!prompt) {
-      return res.status(400).json({ success: false, error: "Missing prompt" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Missing prompt" });
     }
 
     const contents = [];
