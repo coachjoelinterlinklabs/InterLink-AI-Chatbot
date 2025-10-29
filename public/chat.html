@@ -3,410 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat bot</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>InterLink Chatbot</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {},
-        },
-      };
-    </script>
+    <link rel="icon" href="coachjoeai.png" />
   </head>
-  <style>
-    .waveform {
-      display: flex;
-      align-items: flex-end;
-      height: 24px;
-      gap: 4px;
-    }
-    .waveform .bar {
-      width: 3px;
-      height: 8px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.95);
-      animation: wave 1s ease-in-out infinite;
-      animation-play-state: running;
-    }
-    .recording-paused .bar {
-      animation-play-state: paused;
-      opacity: 0.6;
-    }
-    @keyframes wave {
-      0%,
-      100% {
-        transform: scaleY(0.35);
-      }
-      50% {
-        transform: scaleY(1);
-      }
-    }
-    .waveform .bar:nth-child(5n + 1) {
-      animation-delay: 0.05s;
-    }
-    .waveform .bar:nth-child(5n + 2) {
-      animation-delay: 0.1s;
-    }
-    .waveform .bar:nth-child(5n + 3) {
-      animation-delay: 0.15s;
-    }
-    .waveform .bar:nth-child(5n + 4) {
-      animation-delay: 0.2s;
-    }
-    .waveform .bar:nth-child(5n + 5) {
-      animation-delay: 0.25s;
-    }
-  </style>
 
-  <body>
-    <main class="main-area">
-      <div class="main-container">
-        <div class="header">
-          <div class="header-content">
-            <div class="logo-container">
-              <img
-                src="https://public.interlinklabs.ai/1761665406060_Logo.png"
-                alt="" />
-            </div>
-            <h1 class="font-semibold text-[18px]" id="userGreeting">Hello, User</h1>
-          </div>
-          <button class="header-button">
+  <body class="bg-white text-gray-900 flex flex-col items-center min-h-screen">
+    <main class="main-area w-full max-w-2xl mt-6">
+      <div class="main-container bg-white rounded-2xl shadow p-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b pb-3 mb-4">
+          <div class="flex items-center gap-2">
             <img
-              src="https://public.interlinklabs.ai/1761665924687_Vector.png"
-              alt=""
-              srcset=""
-              class="header-icon-btn" />
-          </button>
+              src="coachjoeai.png"
+              alt="logo"
+              class="w-8 h-8 rounded-full"
+            />
+            <h1 id="headerName" class="font-semibold text-[18px]">Hello, User</h1>
+          </div>
+          <img src="InterLinklogo.png" alt="InterLink" class="w-8 h-8" />
         </div>
-        <div class="chat-area overflow-y-auto max-h-[50vh] flex flex-col gap-4">
-          <div>
-            <div class="flex flex-col items-center gap-2">
-              <p class="text-[#525866] text-[16px]">👋 Hi there!</p>
-              <h1 class="text-[#0E121B] font-semibold text-[18px]">
-                How can we help you today?
-              </h1>
-            </div>
-          </div>
-          <div class="flex items-center justify-center gap-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="41"
-              height="1"
-              viewBox="0 0 41 1"
-              fill="none">
-              <path d="M0.5 0.5H40.5" stroke="#E1E4EA" stroke-linecap="round" />
-            </svg>
-            <p class="text-[#CACFD8] text-[12px]">May 20</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="41"
-              height="1"
-              viewBox="0 0 41 1"
-              fill="none">
-              <path d="M0.5 0.5H40.5" stroke="#E1E4EA" stroke-linecap="round" />
-            </svg>
-          </div>
-          <div class="w-full max-w-2xl mx-auto flex flex-col gap-3">
-            <div class="flex items-center gap-2 w-full">
-              <img
-                src="https://public.interlinklabs.ai/1761722972563_avt.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
-                <p class="text-[14px]">
-                  👋Hi! Linker what can I help you with?
-                </p>
-              </div>
-            </div>
 
-            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
-              <img
-                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
-                <p class="text-[14px]">
-                  👋Hi! Linker what can I help you with?
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full">
-              <img
-                src="https://public.interlinklabs.ai/1761722972563_avt.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
-                <p class="text-[14px]">…</p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
-              <img
-                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
-                <p class="text-[14px]">…</p>
-              </div>
-            </div>
-          </div>
-          <div class="w-full max-w-2xl mx-auto flex flex-col gap-3">
-            <div class="flex items-center gap-2 w-full">
-              <img
-                src="https://public.interlinklabs.ai/1761722972563_avt.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
-                <p class="text-[14px]">
-                  👋Hi! Linker what can I help you with?
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
-              <img
-                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
-                <p class="text-[14px]">
-                  👋Hi! Linker what can I help you with?
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full">
-              <img
-                src="https://public.interlinklabs.ai/1761722972563_avt.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
-                <p class="text-[14px]">…</p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
-              <img
-                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
-                alt=""
-                class="w-10 h-10 rounded-full" />
-              <div
-                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
-                <p class="text-[14px]">…</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Chat Messages -->
         <div
-          class="px-[24px] pt-[16px] border-t border-[#E3E6EC] flex items-center gap-3">
-          <div
-            class="flex-1 min-w-0 bg-[#F5F7FA] rounded-full text-[14px] py-[12px] px-4 flex items-center gap-3">
-            <input
-              type="text"
-              placeholder="Ask Anything"
-              class="placeholder:text-[#99A0AE] outline-none w-full bg-transparent" />
-            <img
-              src="https://public.interlinklabs.ai/1761751584296_SmileCircle.png"
-              alt=""
-              class="w-[24px] h-[24px]" />
-            <img
-              id="btn-mic"
-              src="https://public.interlinklabs.ai/1761751584745_microphone.png"
-              alt=""
-              class="w-[24px] h-[24px] cursor-pointer" />
+          class="chat-area overflow-y-auto max-h-[60vh] flex flex-col gap-3 px-2"
+          id="chatArea"
+        >
+          <div class="flex justify-center text-gray-400 text-sm">
+            👋 Welcome to Coach Joe AI!
           </div>
+        </div>
 
-          <div
-            id="recording-mode"
-            class="hidden flex flex-1 min-w-0 items-center gap-3">
-            <button
-              id="btn-bin"
-              class="shrink-0"
-              aria-label="Discard recording">
-              <img
-                src="https://public.interlinklabs.ai/1761751773871_Bin.png"
-                alt="delete"
-                class="w-[24px] h-[24px]" />
-            </button>
-
-            <div
-              class="flex-1 bg-[#6962F1] text-white rounded-full px-4 py-3 flex items-center gap-3">
-              <button
-                id="btn-pause"
-                class="w-8 h-8 shrink-0 grid place-items-center"
-                aria-label="Pause / Resume">
-                <img
-                  src="https://public.interlinklabs.ai/1761751773453_pause-circle.png"
-                  alt="pause"
-                  class="w-6 h-6" />
-              </button>
-
-              <div id="wave" class="waveform flex-1 flex items-center gap-1">
-                <span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span> <span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span>
-                <span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span> <span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span>
-                <span class="bar"></span><span class="bar"></span
-                ><span class="bar"></span><span class="bar"></span>
-              </div>
-
-              <span id="rec-timer" class="text-sm font-medium tabular-nums"
-                >0:00</span
-              >
-            </div>
-          </div>
-
-          <button id="btn-send-recording" class="shrink-0">
-            <img
-              src="https://public.interlinklabs.ai/1761722579694_send.png"
-              alt=""
-              class="w-[32px] h-[32px]" />
+        <!-- Input area -->
+        <div class="mt-4 border-t pt-3 flex items-center gap-2">
+          <input
+            id="userInput"
+            type="text"
+            placeholder="Ask anything..."
+            class="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none text-sm"
+          />
+          <button
+            id="btn-send-recording"
+            class="bg-[#1A1A1A] hover:bg-[#333] text-white rounded-full px-4 py-2 text-sm"
+          >
+            Send
           </button>
         </div>
       </div>
     </main>
+
+    <script src="main.js"></script>
     <script>
-const PROXY_ENDPOINT = "/api/generate";
-const SYSTEM_PROMPT = `Role:
-You are Coach Joe AI, a helpful assistant for InterLink Global.
-Always greet users personally using their Telegram username or ID if provided.`;
-
-// UI elements
-const input = document.querySelector('input[placeholder="Ask Anything"]');
-const sendBtn = document.querySelector("#btn-send-recording");
-const chatArea = document.querySelector(".chat-area");
-const micBtn = document.querySelector("#btn-mic");
-
-let userName = "Linker";
-let hasIntroduced = false;
-
-// helper to append messages
-function addMessage(text, from = "user") {
-  const msg = document.createElement("div");
-  msg.className =
-    "flex items-center gap-2 w-full " +
-    (from === "user" ? "flex-row-reverse" : "");
-  msg.innerHTML = `
-    <img
-      src="${
-        from === "user"
-          ? "https://public.interlinklabs.ai/1761721359159_Ellipse.png"
-          : "https://public.interlinklabs.ai/1761722972563_avt.png"
-      }"
-      class="w-10 h-10 rounded-full"
-    />
-    <div class="px-4 py-[10px] max-w-[70%] ${
-      from === "user"
-        ? "bg-[#1A1A1A] text-white rounded-[16px] rounded-br-[8px]"
-        : "bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]"
-    }">
-      <p class="text-[14px] whitespace-pre-line">${text}</p>
-    </div>
-  `;
-  chatArea.appendChild(msg);
-  chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-// backend call
-async function askCoach(prompt) {
-  try {
-    const body = { prompt, systemPrompt: SYSTEM_PROMPT };
-    const res = await fetch(PROXY_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error || "Unknown");
-    return data.text;
-  } catch (err) {
-    console.error("askCoach error:", err);
-    return "⚠️ Connection error.";
-  }
-}
-
-// send text message
-async function sendMessage() {
-  const prompt = input.value.trim();
-  if (!prompt) return;
-
-  // detect Telegram handle
-  if (!hasIntroduced && /@?\w{3,}/.test(prompt)) {
-    userName = prompt.replace("@", "");
-    addMessage(`Got it! Hello, ${userName} 👋`, "bot");
-    hasIntroduced = true;
-    input.value = "";
-    return;
-  }
-
-  addMessage(prompt, "user");
-  input.value = "";
-  addMessage("…", "bot");
-
-  const personalizedPrompt = hasIntroduced
-    ? `User ${userName} says: ${prompt}`
-    : prompt;
-
-  const reply = await askCoach(personalizedPrompt);
-
-  const dots = Array.from(document.querySelectorAll(".chat-area p")).find(
-    (p) => p.textContent === "…"
-  );
-  if (dots) dots.textContent = reply || "No response";
-}
-
-// button + enter events
-sendBtn.addEventListener("click", sendMessage);
-input.addEventListener("keydown", (e) => e.key === "Enter" && sendMessage());
-
-// greet user on load
-window.addEventListener("load", () => {
-  addMessage(`Hello, ${userName}! 👋`, "bot");
-  addMessage("You can tell me your Telegram username or ID to personalize chat.", "bot");
-});
-
-// 🎙 Optional voice recognition (Speech-to-Text)
-micBtn?.addEventListener("click", async () => {
-  if (!("webkitSpeechRecognition" in window)) {
-    alert("Speech recognition not supported in this browser.");
-    return;
-  }
-
-  const recognition = new webkitSpeechRecognition();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.start();
-
-  micBtn.style.opacity = "0.5";
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    input.value = transcript;
-    micBtn.style.opacity = "1";
-    sendMessage();
-  };
-  recognition.onerror = () => (micBtn.style.opacity = "1");
-});
-</script>
-	<script>
-  const id = localStorage.getItem("interlinkID") || "User";
-  document.getElementById("userGreeting").textContent = `Hello, ${id}`;
-</script>
-<script src="main.js"></script>
+      // display username dynamically
+      const id = localStorage.getItem("interlinkID") || "User";
+      document.getElementById("headerName").textContent = `Hello, ${id}`;
+    </script>
   </body>
 </html>
-
