@@ -1,21 +1,16 @@
-// main.js — Chat Frontend Logic
-
 const PROXY_ENDPOINT = "https://interlink-ai-chatbot-production.up.railway.app/api/generate";
 
 const SYSTEM_PROMPT = `Role:
-You are Coach Joe AI, a friendly assistant for InterLink Global. 
+You are Coach Joe AI, a friendly assistant for InterLink Global.
 Always greet users personally using their Telegram username or ID if provided.`;
 
-// Selectors
 const input = document.querySelector('input[placeholder="Ask Anything"]');
 const sendBtn = document.querySelector("#btn-send-recording");
 const chatArea = document.querySelector(".chat-area");
 
-// Store user info
 let userName = "Linker";
 let hasIntroduced = false;
 
-// Add message bubbles
 function addMessage(text, from = "user") {
   const msg = document.createElement("div");
   msg.className =
@@ -42,7 +37,6 @@ function addMessage(text, from = "user") {
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Call backend
 async function askCoach(prompt) {
   try {
     const body = { prompt, systemPrompt: SYSTEM_PROMPT };
@@ -60,7 +54,6 @@ async function askCoach(prompt) {
   }
 }
 
-// Send message
 async function sendMessage() {
   const prompt = input.value.trim();
   if (!prompt) return;
@@ -75,30 +68,26 @@ async function sendMessage() {
 
   addMessage(prompt, "user");
   input.value = "";
+  const botMsg = document.createElement("div");
+  botMsg.innerHTML = `<p>…</p>`;
   addMessage("…", "bot");
 
-  const personalizedPrompt = hasIntroduced ? `User ${userName} says: ${prompt}` : prompt;
+  const personalizedPrompt = hasIntroduced
+    ? `User ${userName} says: ${prompt}`
+    : prompt;
+
   const reply = await askCoach(personalizedPrompt);
 
-  // Replace placeholder safely
-  const dots = Array.from(document.querySelectorAll(".chat-area p")).find(
-    (p) => p.textContent === "…"
-  );
-  if (dots) {
-    dots.textContent = reply || "No response";
-  } else {
-    addMessage(reply || "No response", "bot");
-  }
+  // Replace last "…" with actual reply
+  const dots = Array.from(chatArea.querySelectorAll("p")).reverse().find(p => p.textContent === "…");
+  if (dots) dots.textContent = reply || "No response";
 }
 
-// Send on click
 sendBtn?.addEventListener("click", sendMessage);
-// Send on Enter
 input?.addEventListener("keydown", (e) => {
   if (e.key === "Enter") sendMessage();
 });
 
-// Initial greeting
 window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
   addMessage("You can tell me your Telegram username or ID to personalize chat.", "bot");
