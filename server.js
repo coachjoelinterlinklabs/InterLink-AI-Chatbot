@@ -14,17 +14,9 @@ const app = express();
 
 // Middleware
 app.use(express.json({ limit: "500kb" }));
+app.use(cors({ origin: true })); // allow all origins for testing
 
-// Allow all origins (for testing)
-app.use(cors({ origin: true }));
-
-// Debug logger to see incoming requests
-app.use((req, res, next) => {
-  console.log(`➡️ ${req.method} ${req.url}`, req.body || {});
-  next();
-});
-
-// Serve frontend
+// Serve frontend static files
 app.use(express.static(path.join(__dirname, "public")));
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
