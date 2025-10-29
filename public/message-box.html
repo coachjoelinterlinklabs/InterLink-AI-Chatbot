@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>InterLink — Coach Joel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* minor style overrides for chat bubbles */
+      .chat-scroll {
+        height: calc(100vh - 170px);
+        overflow-y: auto;
+      }
+      .bubble-user { background: #1a1a1a; color: white; border-radius: 16px 16px 4px 16px; }
+      .bubble-ai { background: #F5F7FA; color: #0E121B; border-radius: 16px 16px 16px 4px; }
+      .typing { font-style: italic; color: #99A0AE; }
+      .small-muted { font-size: 12px; color: #99A0AE; }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <main class="max-w-3xl mx-auto p-4">
+      <div class="bg-white rounded-2xl shadow p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <img src="https://public.interlinklabs.ai/1761665406060_Logo.png" alt="logo" class="w-10 h-10" />
+            <div>
+              <div class="font-semibold">Coach Joel AI</div>
+              <div id="user-badge" class="small-muted">Not logged in</div>
+            </div>
+          </div>
+          <div>
+            <button id="btn-logout" class="px-3 py-1 rounded bg-gray-100 small-muted">Logout</button>
+          </div>
+        </div>
+
+        <div id="chat" class="chat-scroll space-y-4 p-3 bg-white rounded border border-gray-100">
+          <!-- messages appended here -->
+          <div class="text-center small-muted">Conversation starts here</div>
+        </div>
+
+        <div class="mt-4 flex gap-3 items-end">
+          <div class="flex-1">
+            <textarea id="input" rows="2" placeholder="Ask anything about InterLink..." class="w-full rounded-xl p-3 resize-none outline-none border border-gray-200"></textarea>
+            <div class="flex items-center justify-between mt-2">
+              <div class="small-muted">Tip: ask in English or request a translation</div>
+              <div class="flex items-center gap-2">
+                <label class="small-muted">Remember ID</label>
+                <input type="checkbox" id="rememberId" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button id="sendBtn" class="px-4 py-2 bg-[#6962F1] text-white rounded-xl">Send</button>
+            <button id="voiceBtn" class="px-4 py-2 border rounded-xl small-muted">Voice</button>
+          </div>
+        </div>
+
+        <div id="status" class="mt-2 small-muted"></div>
+      </div>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+</html>
