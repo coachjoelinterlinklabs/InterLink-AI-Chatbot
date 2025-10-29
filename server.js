@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -16,14 +15,16 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: "500kb" }));
 
-// ✅ Allow all origins for now (fix to your frontend URL later)
-app.use(cors({
-  origin: true, // allow any origin for dev
-  methods: ["GET","POST","OPTIONS"],
-  allowedHeaders: ["Content-Type"]
-}));
+// Allow all origins (for testing)
+app.use(cors({ origin: true }));
 
-// Serve static frontend
+// Debug logger to see incoming requests
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`, req.body || {});
+  next();
+});
+
+// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
@@ -34,22 +35,30 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// API endpoint for Gemini
+// API endpoint
 app.post("/api/generate", async (req, res) => {
   try {
     const { prompt, systemPrompt } = req.body || {};
-    if (!prompt) return res.status(400).json({ success: false, error: "Missing prompt" });
+    if (!prompt)
+      return res.status(400).json({ success: false, error: "Missing prompt" });
 
     const contents = [];
-    if (systemPrompt) contents.push({ role: "system", parts: [{ text: systemPrompt }] });
+    if (systemPrompt)
+      contents.push({ role: "system", parts: [{ text: systemPrompt }] });
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY },
-        body: JSON.stringify({ contents, generationConfig: { temperature: 0.2, maxOutputTokens: 512 } }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_KEY,
+        },
+        body: JSON.stringify({
+          contents,
+          generationConfig: { temperature: 0.2, maxOutputTokens: 512 },
+        }),
       }
     );
 
