@@ -1,6 +1,5 @@
 // server.js
 const express = require("express");
-const fetch = require("node-fetch");
 const cors = require("cors");
 const path = require("path");
 
@@ -20,11 +19,18 @@ app.get("/", (req, res) => {
 
 app.post("/api/generate", async (req, res) => {
   try {
+    // ✅ FIX: use dynamic import instead of require()
+    const fetch = (await import("node-fetch")).default;
+
     const { prompt, systemPrompt } = req.body || {};
-    if (!prompt) return res.status(400).json({ success: false, error: "Missing prompt" });
+    if (!prompt)
+      return res
+        .status(400)
+        .json({ success: false, error: "Missing prompt" });
 
     const contents = [];
-    if (systemPrompt) contents.push({ role: "system", parts: [{ text: systemPrompt }] });
+    if (systemPrompt)
+      contents.push({ role: "system", parts: [{ text: systemPrompt }] });
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
     const resp = await fetch(
@@ -50,9 +56,12 @@ app.post("/api/generate", async (req, res) => {
 
     res.json({ success: true, text });
   } catch (err) {
+    console.error("❌ Error generating:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
