@@ -1,4 +1,4 @@
-const PROXY_ENDPOINT = "https://interlink-ai-chatbot-production.up.railway.app/api/generate";
+const PROXY_ENDPOINT = "/api/generate";
 
 const SYSTEM_PROMPT = `Role:
 You are Coach Joe AI, a friendly assistant for InterLink Global.
@@ -14,23 +14,15 @@ let hasIntroduced = false;
 function addMessage(text, from = "user") {
   const msg = document.createElement("div");
   msg.className =
-    "flex items-center gap-2 w-full " +
+    "flex items-center gap-2 mb-2 " +
     (from === "user" ? "flex-row-reverse" : "");
   msg.innerHTML = `
-    <img
-      src="${
-        from === "user"
-          ? "https://public.interlinklabs.ai/1761665406060_Logo.png"
-          : "https://public.interlinklabs.ai/1761722972563_avt.png"
-      }"
-      class="w-10 h-10 rounded-full"
-    />
-    <div class="px-4 py-[10px] max-w-[70%] ${
+    <div class="px-3 py-2 max-w-[70%] ${
       from === "user"
-        ? "bg-[#1A1A1A] text-white rounded-[16px] rounded-br-[8px]"
-        : "bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]"
+        ? "bg-gray-800 text-white rounded-r-lg rounded-l-md"
+        : "bg-gray-200 text-black rounded-l-lg rounded-r-md"
     }">
-      <p class="text-[14px]">${text}</p>
+      <p>${text}</p>
     </div>
   `;
   chatArea.appendChild(msg);
@@ -39,11 +31,10 @@ function addMessage(text, from = "user") {
 
 async function askCoach(prompt) {
   try {
-    const body = { prompt, systemPrompt: SYSTEM_PROMPT };
     const res = await fetch(PROXY_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ prompt, systemPrompt: SYSTEM_PROMPT }),
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Unknown error");
@@ -68,8 +59,6 @@ async function sendMessage() {
 
   addMessage(prompt, "user");
   input.value = "";
-  const botMsg = document.createElement("div");
-  botMsg.innerHTML = `<p>…</p>`;
   addMessage("…", "bot");
 
   const personalizedPrompt = hasIntroduced
@@ -78,15 +67,12 @@ async function sendMessage() {
 
   const reply = await askCoach(personalizedPrompt);
 
-  // Replace last "…" with actual reply
   const dots = Array.from(chatArea.querySelectorAll("p")).reverse().find(p => p.textContent === "…");
   if (dots) dots.textContent = reply || "No response";
 }
 
 sendBtn?.addEventListener("click", sendMessage);
-input?.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
+input?.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
 
 window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
