@@ -1,6 +1,6 @@
 // main.js — Chat Frontend Logic
 
-const PROXY_ENDPOINT = "/api/generate"; // Works if same host:port as backend
+const PROXY_ENDPOINT = "https://interlink-ai-chatbot-production.up.railway.app/api/generate";
 
 const SYSTEM_PROMPT = `Role:
 You are Coach Joe AI, a friendly assistant for InterLink Global. 
