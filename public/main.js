@@ -12,7 +12,7 @@ const sendBtn = document.querySelector("#btn-send-recording");
 const chatArea = document.querySelector(".chat-area");
 
 // Store the user’s Telegram ID or username (if they type it)
-let userName = ${userName}; // Default name
+let userName = "Linker"; // Default name
 let hasIntroduced = false;
 
 // Function to add message bubbles
