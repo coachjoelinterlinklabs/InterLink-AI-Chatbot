@@ -1,66 +1,285 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>InterLink — Coach Joel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat bot</title>
     <link rel="stylesheet" href="styles.css" />
-    <style>
-      /* minor style overrides for chat bubbles */
-      .chat-scroll {
-        height: calc(100vh - 170px);
-        overflow-y: auto;
-      }
-      .bubble-user { background: #1a1a1a; color: white; border-radius: 16px 16px 4px 16px; }
-      .bubble-ai { background: #F5F7FA; color: #0E121B; border-radius: 16px 16px 16px 4px; }
-      .typing { font-style: italic; color: #99A0AE; }
-      .small-muted { font-size: 12px; color: #99A0AE; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {},
+        },
+      };
+    </script>
   </head>
-  <body class="bg-gray-50">
-    <main class="max-w-3xl mx-auto p-4">
-      <div class="bg-white rounded-2xl shadow p-4">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <img src="https://public.interlinklabs.ai/1761665406060_Logo.png" alt="logo" class="w-10 h-10" />
-            <div>
-              <div class="font-semibold">Coach Joel AI</div>
-              <div id="user-badge" class="small-muted">Not logged in</div>
+  <style>
+    .waveform {
+      display: flex;
+      align-items: flex-end;
+      height: 24px;
+      gap: 4px;
+    }
+    .waveform .bar {
+      width: 3px;
+      height: 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.95);
+      animation: wave 1s ease-in-out infinite;
+      animation-play-state: running;
+    }
+    .recording-paused .bar {
+      animation-play-state: paused;
+      opacity: 0.6;
+    }
+    @keyframes wave {
+      0%,
+      100% {
+        transform: scaleY(0.35);
+      }
+      50% {
+        transform: scaleY(1);
+      }
+    }
+    .waveform .bar:nth-child(5n + 1) {
+      animation-delay: 0.05s;
+    }
+    .waveform .bar:nth-child(5n + 2) {
+      animation-delay: 0.1s;
+    }
+    .waveform .bar:nth-child(5n + 3) {
+      animation-delay: 0.15s;
+    }
+    .waveform .bar:nth-child(5n + 4) {
+      animation-delay: 0.2s;
+    }
+    .waveform .bar:nth-child(5n + 5) {
+      animation-delay: 0.25s;
+    }
+  </style>
+
+  <body>
+    <main class="main-area">
+      <div class="main-container">
+        <div class="header">
+          <div class="header-content">
+            <div class="logo-container">
+              <img
+                src="https://public.interlinklabs.ai/1761665406060_Logo.png"
+                alt="" />
+            </div>
+            <h1 class="font-semibold text-[18px]">Hello, zane152</h1>
+          </div>
+          <button class="header-button">
+            <img
+              src="https://public.interlinklabs.ai/1761665924687_Vector.png"
+              alt=""
+              srcset=""
+              class="header-icon-btn" />
+          </button>
+        </div>
+        <div class="chat-area overflow-y-auto max-h-[50vh] flex flex-col gap-4">
+          <div>
+            <div class="flex flex-col items-center gap-2">
+              <p class="text-[#525866] text-[16px]">👋 Hi there!</p>
+              <h1 class="text-[#0E121B] font-semibold text-[18px]">
+                How can we help you today?
+              </h1>
             </div>
           </div>
-          <div>
-            <button id="btn-logout" class="px-3 py-1 rounded bg-gray-100 small-muted">Logout</button>
+          <div class="flex items-center justify-center gap-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="41"
+              height="1"
+              viewBox="0 0 41 1"
+              fill="none">
+              <path d="M0.5 0.5H40.5" stroke="#E1E4EA" stroke-linecap="round" />
+            </svg>
+            <p class="text-[#CACFD8] text-[12px]">May 20</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="41"
+              height="1"
+              viewBox="0 0 41 1"
+              fill="none">
+              <path d="M0.5 0.5H40.5" stroke="#E1E4EA" stroke-linecap="round" />
+            </svg>
           </div>
-        </div>
+          <div class="w-full max-w-2xl mx-auto flex flex-col gap-3">
+            <div class="flex items-center gap-2 w-full">
+              <img
+                src="https://public.interlinklabs.ai/1761722972563_avt.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
+                <p class="text-[14px]">
+                  👋Hi! Linker what can I help you with?
+                </p>
+              </div>
+            </div>
 
-        <div id="chat" class="chat-scroll space-y-4 p-3 bg-white rounded border border-gray-100">
-          <!-- messages appended here -->
-          <div class="text-center small-muted">Conversation starts here</div>
-        </div>
+            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
+              <img
+                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
+                <p class="text-[14px]">
+                  👋Hi! Linker what can I help you with?
+                </p>
+              </div>
+            </div>
 
-        <div class="mt-4 flex gap-3 items-end">
-          <div class="flex-1">
-            <textarea id="input" rows="2" placeholder="Ask anything about InterLink..." class="w-full rounded-xl p-3 resize-none outline-none border border-gray-200"></textarea>
-            <div class="flex items-center justify-between mt-2">
-              <div class="small-muted">Tip: ask in English or request a translation</div>
-              <div class="flex items-center gap-2">
-                <label class="small-muted">Remember ID</label>
-                <input type="checkbox" id="rememberId" />
+            <div class="flex items-center gap-2 w-full">
+              <img
+                src="https://public.interlinklabs.ai/1761722972563_avt.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
+                <p class="text-[14px]">…</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
+              <img
+                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
+                <p class="text-[14px]">…</p>
               </div>
             </div>
           </div>
+          <div class="w-full max-w-2xl mx-auto flex flex-col gap-3">
+            <div class="flex items-center gap-2 w-full">
+              <img
+                src="https://public.interlinklabs.ai/1761722972563_avt.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
+                <p class="text-[14px]">
+                  👋Hi! Linker what can I help you with?
+                </p>
+              </div>
+            </div>
 
-          <div class="flex flex-col gap-2">
-            <button id="sendBtn" class="px-4 py-2 bg-[#6962F1] text-white rounded-xl">Send</button>
-            <button id="voiceBtn" class="px-4 py-2 border rounded-xl small-muted">Voice</button>
+            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
+              <img
+                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
+                <p class="text-[14px]">
+                  👋Hi! Linker what can I help you with?
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full">
+              <img
+                src="https://public.interlinklabs.ai/1761722972563_avt.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] bg-[#F5F7FA] text-[#0E121B] rounded-[16px] rounded-bl-[8px]">
+                <p class="text-[14px]">…</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full even:flex-row-reverse">
+              <img
+                src="https://public.interlinklabs.ai/1761721359159_Ellipse.png"
+                alt=""
+                class="w-10 h-10 rounded-full" />
+              <div
+                class="px-4 py-[10px] max-w-[70%] even:bg-[#1A1A1A] even:text-white odd:bg-[#F5F7FA] odd:text-[#0E121B] rounded-[16px] even:rounded-br-[8px] odd:rounded-bl-[8px]">
+                <p class="text-[14px]">…</p>
+              </div>
+            </div>
           </div>
         </div>
+        <div
+          class="px-[24px] pt-[16px] border-t border-[#E3E6EC] flex items-center gap-3">
+          <div
+            class="flex-1 min-w-0 bg-[#F5F7FA] rounded-full text-[14px] py-[12px] px-4 flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Ask Anything"
+              class="placeholder:text-[#99A0AE] outline-none w-full bg-transparent" />
+            <img
+              src="https://public.interlinklabs.ai/1761751584296_SmileCircle.png"
+              alt=""
+              class="w-[24px] h-[24px]" />
+            <img
+              id="btn-mic"
+              src="https://public.interlinklabs.ai/1761751584745_microphone.png"
+              alt=""
+              class="w-[24px] h-[24px] cursor-pointer" />
+          </div>
 
-        <div id="status" class="mt-2 small-muted"></div>
+          <div
+            id="recording-mode"
+            class="hidden flex flex-1 min-w-0 items-center gap-3">
+            <button
+              id="btn-bin"
+              class="shrink-0"
+              aria-label="Discard recording">
+              <img
+                src="https://public.interlinklabs.ai/1761751773871_Bin.png"
+                alt="delete"
+                class="w-[24px] h-[24px]" />
+            </button>
+
+            <div
+              class="flex-1 bg-[#6962F1] text-white rounded-full px-4 py-3 flex items-center gap-3">
+              <button
+                id="btn-pause"
+                class="w-8 h-8 shrink-0 grid place-items-center"
+                aria-label="Pause / Resume">
+                <img
+                  src="https://public.interlinklabs.ai/1761751773453_pause-circle.png"
+                  alt="pause"
+                  class="w-6 h-6" />
+              </button>
+
+              <div id="wave" class="waveform flex-1 flex items-center gap-1">
+                <span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span> <span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span>
+                <span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span> <span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span>
+                <span class="bar"></span><span class="bar"></span
+                ><span class="bar"></span><span class="bar"></span>
+              </div>
+
+              <span id="rec-timer" class="text-sm font-medium tabular-nums"
+                >0:00</span
+              >
+            </div>
+          </div>
+
+          <button id="btn-send-recording" class="shrink-0">
+            <img
+              src="https://public.interlinklabs.ai/1761722579694_send.png"
+              alt=""
+              class="w-[32px] h-[32px]" />
+          </button>
+        </div>
       </div>
     </main>
-
-    <script src="main.js"></script>
+	<script src="main.js"></script>
   </body>
 </html>
