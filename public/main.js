@@ -102,5 +102,6 @@ input?.addEventListener("keydown", (e) => {
 // Greet user when chat loads
 window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
-  addMessage("You can tell me your Telegram username or ID to personalize chat.", "bot");
+  addMessage("You can tell me your Name to personalize chat.", "bot");
 });
+
