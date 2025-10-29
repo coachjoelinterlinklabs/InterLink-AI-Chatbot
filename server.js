@@ -10,56 +10,70 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "500kb" }));
+app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
-if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set");
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
-// Serve login.html as default
+if (!GEMINI_KEY) {
+  console.error("❌ Missing GEMINI_API_KEY in environment!");
+}
+
+// Default route → login page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// AI endpoint
+// Chat AI route
 app.post("/api/generate", async (req, res) => {
   try {
-    const { prompt, systemPrompt } = req.body || {};
-    if (!prompt)
+    const { prompt, systemPrompt } = req.body;
+    if (!prompt) {
       return res.status(400).json({ success: false, error: "Missing prompt" });
+    }
 
-    const contents = [
-      { role: "user", parts: [{ text: systemPrompt || "" }] },
-      { role: "user", parts: [{ text: prompt }] },
-    ];
+    const body = {
+      contents: [
+        { role: "user", parts: [{ text: systemPrompt || "" }] },
+        { role: "user", parts: [{ text: prompt }] },
+      ],
+    };
 
-    const resp = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_KEY,
-        },
-        body: JSON.stringify({
-          contents,
-          generationConfig: { temperature: 0.6, maxOutputTokens: 512 },
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       }
     );
 
-    const data = await resp.json();
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join(" ") ||
-      "Sorry, I couldn’t understand that.";
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Gemini API error:", data);
+      return res
+        .status(500)
+        .json({ success: false, error: data.error?.message || "API Error" });
+    }
+
+    // ✅ Extract Gemini text safely
+    let text = "No response.";
+    if (data?.candidates?.length > 0) {
+      const parts = data.candidates[0].content.parts;
+      text = parts.map((p) => p.text || "").join(" ").trim();
+    }
+
+    if (!text || text === "") text = "Sorry, I couldn’t generate a response.";
 
     res.json({ success: true, text });
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 InterLink AI running at http://localhost:${PORT}`)
+);
