@@ -4,8 +4,22 @@ const cors = require("cors");
 const path = require("path");
 
 const app = express();
-app.use(cors());
+import cors from "cors"; // if using ES module syntax
+// or: const cors = require("cors"); if using require()
+
+const app = express();
+
+// ✅ FIXED: add explicit CORS headers
+app.use(
+  cors({
+    origin: "*", // allow all origins for testing (you can restrict later)
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json({ limit: "500kb" }));
+
 
 // serve static frontend files
 app.use(express.static(path.join(__dirname, "public")));
@@ -65,3 +79,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running on http://localhost:${PORT}`)
 );
+
