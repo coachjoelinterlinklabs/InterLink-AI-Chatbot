@@ -11,11 +11,11 @@ const input = document.querySelector('input[placeholder="Ask Anything"]');
 const sendBtn = document.querySelector("#btn-send-recording");
 const chatArea = document.querySelector(".chat-area");
 
-// Store the user’s Telegram ID or username (if they type it)
-let userName = "Linker"; // Default name
+// Store user info
+let userName = "Linker";
 let hasIntroduced = false;
 
-// Function to add message bubbles
+// Add message bubbles
 function addMessage(text, from = "user") {
   const msg = document.createElement("div");
   msg.className =
@@ -42,7 +42,7 @@ function addMessage(text, from = "user") {
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Call your backend Gemini proxy
+// Call backend
 async function askCoach(prompt) {
   try {
     const body = { prompt, systemPrompt: SYSTEM_PROMPT };
@@ -51,22 +51,20 @@ async function askCoach(prompt) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Unknown error");
     return data.text;
   } catch (err) {
     console.error("askCoach error:", err);
-    return "❌ Server not reachable. Please try again later.";
+    return "⚠️ Error connecting to server.";
   }
 }
 
-// Handle sending a message
+// Send message
 async function sendMessage() {
   const prompt = input.value.trim();
   if (!prompt) return;
 
-  // Detect Telegram ID or username if first message
   if (!hasIntroduced && /@?\w{3,}/.test(prompt)) {
     userName = prompt.replace("@", "");
     addMessage(`Got it! Hello, ${userName} 👋`, "bot");
@@ -79,13 +77,10 @@ async function sendMessage() {
   input.value = "";
   addMessage("…", "bot");
 
-  const personalizedPrompt = hasIntroduced
-    ? `User ${userName} says: ${prompt}`
-    : prompt;
-
+  const personalizedPrompt = hasIntroduced ? `User ${userName} says: ${prompt}` : prompt;
   const reply = await askCoach(personalizedPrompt);
 
-  // Replace "…" with real reply safely
+  // Replace placeholder safely
   const dots = Array.from(document.querySelectorAll(".chat-area p")).find(
     (p) => p.textContent === "…"
   );
@@ -96,19 +91,15 @@ async function sendMessage() {
   }
 }
 
-// Send on button click
+// Send on click
 sendBtn?.addEventListener("click", sendMessage);
-
-// Send on Enter key
+// Send on Enter
 input?.addEventListener("keydown", (e) => {
   if (e.key === "Enter") sendMessage();
 });
 
-// Greet user when chat loads
+// Initial greeting
 window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
-  addMessage(
-    "You can tell me your Telegram username or ID to personalize chat.",
-    "bot"
-  );
+  addMessage("You can tell me your Telegram username or ID to personalize chat.", "bot");
 });
