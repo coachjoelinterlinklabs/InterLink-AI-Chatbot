@@ -4,8 +4,9 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 
-dotenv.config(); // Load .env variables
+dotenv.config(); // Load GEMINI_API_KEY from environment
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,31 +17,29 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "500kb" }));
 
-// Allow static frontend files
+// Serve frontend static files
 app.use(express.static(path.join(__dirname, "public")));
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set");
+if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set!");
 
-// Serve index.html on root
+// Serve index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// API endpoint for Gemini AI
+// API endpoint for Gemini
 app.post("/api/generate", async (req, res) => {
   try {
-    const fetch = (await import("node-fetch")).default;
-
     const { prompt, systemPrompt } = req.body || {};
-    if (!prompt)
-      return res
-        .status(400)
-        .json({ success: false, error: "Missing prompt" });
+    if (!prompt) {
+      return res.status(400).json({ success: false, error: "Missing prompt" });
+    }
 
     const contents = [];
-    if (systemPrompt)
+    if (systemPrompt) {
       contents.push({ role: "system", parts: [{ text: systemPrompt }] });
+    }
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
     const response = await fetch(
@@ -71,7 +70,7 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-// Start server on Railway port or 3000
+// Listen on Railway port or default 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running on port ${PORT}`)
