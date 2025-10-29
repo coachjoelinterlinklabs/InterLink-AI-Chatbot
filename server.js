@@ -1,8 +1,8 @@
 // server.js
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
 import path from "path";
+import fetch from "node-fetch";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,55 +12,54 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "500kb" }));
 
-// serve static frontend
+// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
-const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
 if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set");
 
-// ✅ Gemini 2.5 endpoint
-const GEMINI_ENDPOINT =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-
-// base route
-app.get("/", (_, res) => {
+// === ROUTES ===
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// chat endpoint
 app.post("/api/generate", async (req, res) => {
   try {
     const { prompt, systemPrompt } = req.body || {};
-    if (!prompt) return res.status(400).json({ success: false, error: "Missing prompt" });
+    if (!prompt)
+      return res.status(400).json({ success: false, error: "Missing prompt" });
 
     const contents = [
-      { role: "user", parts: [{ text: systemPrompt || "" }] },
+      ...(systemPrompt ? [{ role: "system", parts: [{ text: systemPrompt }] }] : []),
       { role: "user", parts: [{ text: prompt }] },
     ];
 
-    const response = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents,
-        generationConfig: { temperature: 0.6, maxOutputTokens: 1024 },
-      }),
-    });
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + GEMINI_KEY,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents,
+          generationConfig: { temperature: 0.4, maxOutputTokens: 512 },
+        }),
+      }
+    );
 
     const data = await response.json();
-    console.log("🟢 Gemini raw response:", JSON.stringify(data, null, 2));
 
+    // FIX: Correct field for Gemini 2.5 API
     const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      data?.output?.[0]?.contents?.[0]?.parts?.[0]?.text ||
-      "No response from Gemini.";
+      data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join(" ") ||
+      data?.output_text ||
+      "⚠️ No AI response received.";
 
     res.json({ success: true, text });
   } catch (err) {
-    console.error("❌ Gemini error:", err);
+    console.error("❌ AI error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Running at http://localhost:${PORT}`));
