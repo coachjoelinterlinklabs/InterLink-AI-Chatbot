@@ -1,52 +1,62 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InterLink AI Login</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — InterLink</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body
-    class="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center px-4"
-  >
-    <div class="bg-white p-8 rounded-2xl shadow-lg max-w-sm w-full">
-      <img
-        src="coachjoeai.png"
-        alt="Coach Joe AI"
-        class="mx-auto w-20 h-20 mb-4"
-      />
-      <h1 class="text-xl font-semibold mb-2 text-gray-800">
-        Welcome to InterLink AI
-      </h1>
-      <p class="text-gray-500 text-sm mb-6">
-        Please enter your InterLink ID to continue
-      </p>
+  <body class="bg-gray-50">
+    <main class="max-w-md mx-auto p-6">
+      <div class="bg-white rounded-2xl shadow p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://public.interlinklabs.ai/1761665406060_Logo.png" alt="logo" class="w-12 h-12" />
+          <div>
+            <div class="font-semibold">InterLink Chatbot</div>
+            <div class="text-sm text-gray-500">Login with your InterLink ID</div>
+          </div>
+        </div>
 
-      <input
-        id="interlinkId"
-        type="text"
-        placeholder="Enter your InterLink ID"
-        class="border border-gray-300 rounded-full w-full py-2 px-4 text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-      />
-      <button
-        id="getStarted"
-        class="bg-indigo-600 text-white w-full py-2 mt-4 rounded-full font-medium hover:bg-indigo-700 transition"
-      >
-        Get Started
-      </button>
-    </div>
+        <label class="block text-sm text-gray-600 mb-1">InterLink ID</label>
+        <input id="interlinkId" type="text" placeholder="Enter your InterLink ID" class="w-full rounded-xl p-3 border border-gray-200 mb-3" />
+
+        <div class="flex items-center justify-between mb-4">
+          <label class="text-sm text-gray-600">Remember me</label>
+          <input id="persist" type="checkbox" />
+        </div>
+
+        <div class="flex gap-3">
+          <button id="loginBtn" class="flex-1 px-4 py-2 bg-[#6962F1] text-white rounded-xl">Login</button>
+          <a href="/index.html" class="px-4 py-2 border rounded-xl text-gray-600">Back</a>
+        </div>
+      </div>
+    </main>
 
     <script>
-      document.getElementById("getStarted").addEventListener("click", () => {
-        const id = document.getElementById("interlinkId").value.trim();
-        if (!id) {
-          alert("Please enter your InterLink ID first.");
+      const loginBtn = document.getElementById("loginBtn");
+      const idInput = document.getElementById("interlinkId");
+      const persist = document.getElementById("persist");
+      const PERSIST_KEY = "interlink_id_persist";
+      const SESSION_KEY = "interlink_id";
+
+      loginBtn.addEventListener("click", () => {
+        const val = idInput.value.trim();
+        if (!val) {
+          alert("Please enter your InterLink ID");
           return;
         }
-        localStorage.setItem("interlinkID", id);
-        window.location.href = "chat.html";
+        sessionStorage.setItem(SESSION_KEY, val);
+        if (persist.checked) localStorage.setItem(PERSIST_KEY, val);
+        window.location.href = "/message-box.html";
       });
+
+      // if already have stored id, prefill
+      const existing = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(PERSIST_KEY);
+      if (existing) {
+        idInput.value = existing;
+        persist.checked = !!localStorage.getItem(PERSIST_KEY);
+      }
     </script>
   </body>
 </html>
