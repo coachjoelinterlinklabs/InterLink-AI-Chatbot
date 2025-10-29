@@ -6,40 +6,29 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 
-dotenv.config(); // Load GEMINI_API_KEY from environment
+dotenv.config(); // Load GEMINI_API_KEY
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ✅ Middleware
+// Middleware
 app.use(express.json({ limit: "500kb" }));
 
-// Allow requests from your deployed frontend and local testing
+// ✅ CORS: allow your frontend domain
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow localhost, Railway frontend, or no origin (file://)
-      const allowedOrigins = [
-        "http://localhost:5000",
-        "https://interlink-ai-chatbot.up.railway.app",
-        null,
-      ];
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "https://interlink-ai-chatbot.up.railway.app",
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
-// Serve frontend static files
+// Serve static frontend files
 app.use(express.static(path.join(__dirname, "public")));
 
+// GEMINI key
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set!");
 
@@ -52,30 +41,18 @@ app.get("/", (req, res) => {
 app.post("/api/generate", async (req, res) => {
   try {
     const { prompt, systemPrompt } = req.body || {};
-    if (!prompt) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Missing prompt" });
-    }
+    if (!prompt) return res.status(400).json({ success: false, error: "Missing prompt" });
 
     const contents = [];
-    if (systemPrompt) {
-      contents.push({ role: "system", parts: [{ text: systemPrompt }] });
-    }
+    if (systemPrompt) contents.push({ role: "system", parts: [{ text: systemPrompt }] });
     contents.push({ role: "user", parts: [{ text: prompt }] });
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": GEMINI_KEY,
-        },
-        body: JSON.stringify({
-          contents,
-          generationConfig: { temperature: 0.2, maxOutputTokens: 512 },
-        }),
+        headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY },
+        body: JSON.stringify({ contents, generationConfig: { temperature: 0.2, maxOutputTokens: 512 } }),
       }
     );
 
@@ -92,8 +69,6 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-// Listen on Railway port or default 3000
+// Listen
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
