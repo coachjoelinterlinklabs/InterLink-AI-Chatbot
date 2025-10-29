@@ -50,9 +50,19 @@
         </div>
         <div class="px-[24px] pt-[16px] border-t border-[#E3E6EC]">
           <button
-            class="w-full py-[10px] px-[16px] bg-[#6962F1] rounded-[12px] text-white">
-            Get Started
-          </button>
+  id="getStartedBtn"
+  class="w-full py-[10px] px-[16px] bg-[#6962F1] rounded-[12px] text-white">
+  Get Started
+</button>
+
+<script>
+  document
+    .getElementById("getStartedBtn")
+    .addEventListener("click", () => {
+      window.location.href = "login.html";
+    });
+</script>
+
         </div>
       </div>
     </main>
