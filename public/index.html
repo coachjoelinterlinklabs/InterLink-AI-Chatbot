@@ -1,51 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InterLink Chatbot</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <main class="main-area">
-      <div class="main-container">
-        <div class="header">
-          <div class="header-content">
-            <div class="logo-container">
-              <img src="https://public.interlinklabs.ai/1761665406060_Logo.png" alt="" />
-            </div>
-            <h1 class="font-semibold text-[18px]">InterLink Chatbot</h1>
-          </div>
-        </div>
-
-        <div class="chat-area">
-          <div>
-            <div class="flex flex-col items-center gap-2">
-              <p class="text-[#525866] text-[16px]">👋 Hi there!</p>
-              <h1 class="text-[#0E121B] font-semibold text-[18px]">
-                How can we help you today?
-              </h1>
-            </div>
-            <img src="https://public.interlinklabs.ai/1761666821438_axolink.png" alt="" class="object-cover" />
-          </div>
-        </div>
-
-        <div class="px-[24px] pt-[16px] border-t border-[#E3E6EC]">
-          <input
-            type="text"
-            placeholder="Ask Anything"
-            class="w-full p-2 border rounded mb-2"
-          />
-          <button
-            id="btn-send-recording"
-            class="w-full py-2 px-4 bg-[#6962F1] rounded text-white"
-          >
-            Send
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InterLink Chatbot</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-gray-50">
+  <main class="main-area flex flex-col items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white shadow rounded-lg overflow-hidden">
+      <div class="chat-area p-4 h-96 overflow-y-auto"></div>
+      <div class="px-4 py-2 border-t border-gray-300 flex gap-2">
+        <input type="text" placeholder="Ask Anything" class="flex-1 px-3 py-2 border rounded"/>
+        <button id="btn-send-recording" class="px-4 py-2 bg-indigo-600 text-white rounded">Send</button>
       </div>
-    </main>
-    <script src="main.js"></script>
-  </body>
+    </div>
+  </main>
+  <script src="main.js"></script>
+</body>
 </html>
