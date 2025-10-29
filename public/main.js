@@ -11,10 +11,6 @@ const input = document.querySelector('input[placeholder="Ask Anything"]');
 const sendBtn = document.querySelector("#btn-send-recording");
 const chatArea = document.querySelector(".chat-area");
 
-// Store the user’s Telegram ID or username (if they type it)
-let userName = "Zane152"; // Default name
-let hasIntroduced = false;
-
 // Function to add message bubbles
 function addMessage(text, from = "user") {
   const msg = document.createElement("div");
@@ -25,7 +21,7 @@ function addMessage(text, from = "user") {
     <img
       src="${
         from === "user"
-          ? "https://public.interlinklabs.ai/1761721359159_Ellipse.png"
+          ? "https://public.interlinklabs.ai/1761665406060_Logo.png"
           : "https://public.interlinklabs.ai/1761722972563_avt.png"
       }"
       class="w-10 h-10 rounded-full"
@@ -104,4 +100,5 @@ window.addEventListener("load", () => {
   addMessage(`Hello, ${userName}! 👋`, "bot");
   addMessage("You can tell me your Name to personalize chat.", "bot");
 });
+
 
