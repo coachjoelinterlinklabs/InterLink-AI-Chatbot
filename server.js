@@ -16,19 +16,16 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: "500kb" }));
 
-// ✅ CORS: allow your frontend domain
-app.use(
-  cors({
-    origin: "https://interlink-ai-chatbot.up.railway.app",
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+// ✅ Allow all origins for now (fix to your frontend URL later)
+app.use(cors({
+  origin: true, // allow any origin for dev
+  methods: ["GET","POST","OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
 
-// Serve static frontend files
+// Serve static frontend
 app.use(express.static(path.join(__dirname, "public")));
 
-// GEMINI key
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_KEY) console.warn("⚠️ GEMINI_API_KEY not set!");
 
