@@ -16,10 +16,22 @@ const app = express();
 // ✅ Middleware
 app.use(express.json({ limit: "500kb" }));
 
-// Allow all origins, including null (file://) for local testing
+// Allow requests from your deployed frontend and local testing
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      // Allow localhost, Railway frontend, or no origin (file://)
+      const allowedOrigins = [
+        "http://localhost:5000",
+        "https://interlink-ai-chatbot.up.railway.app",
+        null,
+      ];
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   })
